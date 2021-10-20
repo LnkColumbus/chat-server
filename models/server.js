@@ -3,7 +3,8 @@ const { createServer }  = require('http');
 const socketio          = require('socket.io');
 const cors              = require('cors');
 
-const Sockets = require('./sockets');
+const Sockets           = require('./sockets');
+const { dbConnection }  = require('../database/config');
 
 class Server {
 
@@ -13,8 +14,13 @@ class Server {
         this.server = createServer( this.app ); // HTTP Server
         this.io     = socketio( this.server ); // Configuración de socket server
 
-        this.middlewares();
-        this.sockets();
+        this.connectDB(); // Conexión a la BD
+        this.middlewares(); // Middlewares
+        this.sockets(); // Sockets
+    }
+
+    async connectDB() {
+        await dbConnection();
     }
 
     middlewares() {
