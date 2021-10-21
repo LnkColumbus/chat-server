@@ -14,8 +14,15 @@ class Server {
         this.server = createServer( this.app ); // HTTP Server
         this.io     = socketio( this.server ); // Configuración de socket server
 
+        this.paths = {
+            auth:     '/api/auth',
+            messages: '/api/mensajes',
+            users:    '/api/usuarios'
+        }
+
         this.connectDB(); // Conexión a la BD
         this.middlewares(); // Middlewares
+        this.routes(); // Rutas
         this.sockets(); // Sockets
     }
 
@@ -27,8 +34,17 @@ class Server {
         // CORS
         this.app.use(cors());
 
+        // Lectura y Parseo del body
+        this.app.use(express.json());
+
         // Directorio público
         this.app.use(express.static('public'));
+    }
+
+    routes() {
+        this.app.use(this.paths.auth, require('../routes/auth'));
+        this.app.use(this.paths.messages, require('../routes/messages'));
+        // this.app.use(this.paths.users, require('../routes/users'));
     }
 
     sockets() {
